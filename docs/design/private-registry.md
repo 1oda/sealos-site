@@ -1,12 +1,17 @@
+---
+sidebar_position: 2
+---
+
 # How to use sealos private registry
 
-All cluster nodes have been configure priave registry, When pulling an image, it will pull from the private image registry,You can use the follow command view the configuration on any cluster node:
+## How it works
+
+Each node will run an image-cri-shim daemon,The Kubelet performs grpc interaction with image-cri-shim when pulling the image.It finds the image in the private registry according to the image name.If the image exist it pulls from local,otherwise pull from remote.
+
+You can run the follow command verify the image-cri-shim daemon:
 
 ```shell
-root@node01:~# containerd config dump |grep sealos.hub
-    sandbox_image = "sealos.hub:5000/pause:3.7"
-        [plugins."io.containerd.grpc.v1.cri".registry.configs."sealos.hub:5000"]
-          [plugins."io.containerd.grpc.v1.cri".registry.configs."sealos.hub:5000".auth]
+$ systemctl status image-cri-shim.service 
 ```
 
 ## Where the private registry running
@@ -14,7 +19,7 @@ root@node01:~# containerd config dump |grep sealos.hub
 The sealos private registry runs on the first node of the cluster，The first node of the cluster is where you run the create cluster command, you can see this container with the following command.
 
 ```shell
-root@node01:~# nerdctl ps
+$ nerdctl ps
 CONTAINER ID    IMAGE                               COMMAND                   CREATED         STATUS    PORTS    NAMES
 eb772a8cc788    docker.io/library/registry:2.7.1    "/entrypoint.sh /etc…"    22 hours ago    Up                 sealos-registry 
 ```
@@ -46,10 +51,11 @@ docker login 192.168.1.10:5000 -u admin -p passw0rd
 
 ## Push and pull images
 
-Push image example.
+Push image example:
+
 ```shell
-root@ubuntu:~# sealos tag quay.io/skopeo/stable 192.168.72.50:5000/skopeo/stable
-root@ubuntu:~# sealos push 192.168.72.50:5000/skopeo/stable
+$ sealos tag quay.io/skopeo/stable 192.168.72.50:5000/skopeo/stable
+$ sealos push 192.168.72.50:5000/skopeo/stable
 Using default tag: latest
 The push refers to repository [192.168.72.50:5000/skopeo/stable]
 a98b3d943f46: Pushed 
@@ -61,13 +67,13 @@ c550c8e0f355: Pushed
 latest: digest: sha256:238efd85942755fbd28d4d23d1f8dedd99e9eec20777e946f132633b826a9295 size: 1570
 ```
 
-Pull image example.
+Pull image example:
 
 ```shell
 sealos pull 192.168.72.50:5000/skopeo/stable
 ```
 
-Or use the `docker pull` command.
+Or use the `docker pull` command:
 
 ```shell
 docker pull 192.168.72.50:5000/skopeo/stable

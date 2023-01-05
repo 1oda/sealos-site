@@ -1,4 +1,8 @@
-# rootfs
+---
+sidebar_position: 3
+---
+
+# Using containerd-rootfs
 
 ```
 .
@@ -56,6 +60,8 @@
     └── audit-policy.yml
 ```
 
+Kubefile 内容, 其它文件内容可以 `sealos pull labring/kubernetes:v1.24.0` 然后在 `/var/lib/sealos` 下面查看：
+
 ```dockerfile
 FROM scratch
 MAINTAINER sealyun
@@ -74,14 +80,12 @@ ENV registryDomain=sealos.hub
 ENV registryPort=5000
 ENV registryUsername=admin
 ENV registryPassword=passw0rd
-COPY .. .
+COPY . .
 ```
 
-image-cri-shim can replace image to registry addr
+`sealos build -t labring/kubernetes:v1.24.0 .` 即可。
 
-- offline
-  if offline module,you need add imageList file in dir `images/shim`
-  example ImageList file is :
-  `ghcr.io/sealyun/lvscare:v1.1.3-beta.2 k8s.gcr.io/kube-apiserver:v1.24.0 k8s.gcr.io/kube-controller-manager:v1.24.0 k8s.gcr.io/kube-scheduler:v1.24.0 k8s.gcr.io/kube-proxy:v1.24.0 k8s.gcr.io/pause:3.5 k8s.gcr.io/etcd:3.5.0-0 k8s.gcr.io/coredns/coredns:v1.8.4`
-  shim found image in imageList ,the `k8s.gcr.io/kube-apiserver:v1.24.0` replace to `sealos.hub:5000/kube-apiserver:v1.24.0`
-- online (default module)
+image-cri-shim 则可以覆盖镜像的仓库地址。
+
+- 在线安装（默认）
+- 离线安装： 需要在 `images/shim` 目录下放置 imageList 文件，如 `ghcr.io/sealyun/lvscare:v1.1.3-beta.2 k8s.gcr.io/kube-apiserver:v1.24.0 k8s.gcr.io/kube-controller-manager:v1.24.0 k8s.gcr.io/kube-scheduler:v1.24.0 k8s.gcr.io/kube-proxy:v1.24.0 k8s.gcr.io/pause:3.5 k8s.gcr.io/etcd:3.5.0-0 k8s.gcr.io/coredns/coredns:v1.8.4`。image-cri-shim 在 imageList 中查找镜像，并将 `k8s.gcr.io/kube-apiserver:v1.24.0` 替换为 `sealos.hub:5000/kube-apiserver:v1.24.0`。

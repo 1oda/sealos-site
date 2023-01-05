@@ -36,8 +36,12 @@ const config = {
           sidebarPath: require.resolve("./sidebars.js"),
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
-          editUrl: "https://github.com/fanux/sealos-site/tree/main/",
-          editLocalizedFiles: true,
+          editUrl: ({ versionDocsDirPath, docPath, locale }) =>
+            "https://github.com/labring/sealos/tree/main/docs/4.0/" +
+            (locale === "en" ? `${versionDocsDirPath}` : `i18n/${locale}`) +
+            `/${docPath}`,
+          editLocalizedFiles: false,
+          editCurrentVersion: false,
         },
         blog: {
           showReadingTime: true,
@@ -93,6 +97,7 @@ const config = {
             position: "left",
             label: "Docs",
           },
+
           {
             type: "docSidebar",
             position: "left",
@@ -100,6 +105,11 @@ const config = {
             label: "API",
           },
           { to: "/blog", label: "Blog", position: "left" },
+          {
+            position: "left",
+            href: "https://www.wenjuan.com/s/UZBZJv9ToJ/#",
+            label: "Contact",
+          },
           {
             type: "localeDropdown",
             position: "right",
@@ -129,6 +139,10 @@ const config = {
               {
                 label: "sealyun (older version)",
                 to: "https://pan.baidu.com/s/1fu_l8yL_K6BLpSIugKhvAg?pwd=47f5",
+              },
+              {
+                label: "Cloud",
+                to: "https://cloud.sealos.io",
               },
             ],
           },
